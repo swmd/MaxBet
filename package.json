@@ -1,0 +1,45 @@
+{
+  "name": "polling-app-node-rethinkdb",
+  "version": "1.0.0",
+  "description": "Building real time polling application using RethinkDB and Node.js.",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeforgeek/polling-app-using-nodejs-rethinkDB.git"
+  },
+  "keywords": [
+    "rethinkdb",
+    "app",
+    "nodejs",
+    "and",
+    "rethinkdb",
+    "app"
+  ],
+  "author": "Shahid Shaikh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codeforgeek/polling-app-using-nodejs-rethinkDB/issues"
+  },
+  "homepage": "https://github.com/codeforgeek/polling-app-using-nodejs-rethinkDB#readme",
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.13.4",
+    "express-jwt": "^3.4.0",
+    "jsonwebtoken": "^7.1.9",
+    "mongodb": "^2.2.11",
+    "mongoose": "^4.6.6",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "rethinkdb": "^2.2.1",
+    "socket.io": "^1.4.5",
+    "thinky": "^2.3.6"
+  },
+  "devDependencies": {
+    "bower": "^1.7.7"
+  }
+}

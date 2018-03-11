@@ -1,0 +1,48 @@
+<div layout-align="center center">
+<md-card>
+    <md-toolbar class="md-hue-2">
+      <div class="md-toolbar-tools">
+        <h2>
+          <span>Login</span>
+        </h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+
+  <md-card-content>
+    <!--ADD NEW USER-->
+    <form name="loginForm" ng-submit="vm.onSubmit()">
+      <br />
+      <!--<div layout="row" layout-align="center center">
+        <div class="ui medium header">Log in</div>
+      </div>-->
+      <br />
+      <md-input-container class="md-block">
+        <!-- Use floating placeholder instead of label -->
+        <input type="text" class="form-control" id="email" placeholder="Enter username" ng-model="vm.credentials.email" ng-required="true">
+      </md-input-container>
+      <md-input-container class="md-block">
+        <!-- Use floating placeholder instead of label -->
+        <input type="password" class="form-control" id="password" placeholder="Enter password" ng-model="vm.credentials.password" ng-required="true">
+      </md-input-container>
+
+      <div layout="row" layout-align="center center">
+        <md-input-container class="md-block">
+          <md-checkbox ng-model="vm.credentials.keepLoggedIn" class="md-primary" aria-label="Keep me logged in">
+            Keep me logged in
+          </md-checkbox>
+        </md-input-container>
+      </div>
+
+      <div layout="row" layout-align="center start">
+        <div><md-button type="submit" class="md-raised md-primary" ng-disabled="newUserForm.$invalid">Login</md-button></div>
+      </div>
+      <br />
+    </form>
+
+      <p>
+        *turn off Incognito / Private browser mode to access the site
+      </p>    
+  </md-card-content>
+</md-card>
+</div>

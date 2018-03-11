@@ -1,0 +1,160 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+    <md-button aria-label="Fantasy Props" href="/#/profile">
+      <h2>Fantasy Props</h2>
+    </md-button>
+
+      <span flex></span>
+
+    <md-button aria-label="Fantasy Props" ng-click="reload()">
+      <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+    </md-button>
+      <!--<h3>
+        <span ng-href="/#/userbalance">{{ vm.user.name }}: {{ vm.user.balance }}</span>
+      </h3>-->
+  </div>
+
+</md-toolbar>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Settings</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+        <div layout="row" layout-align="center center">
+          <div flex="85">
+            <span><strong>Confirm bet before sending</strong></span>
+          </div>
+          <div flex="15">
+            <md-switch ng-model="vm.user.settings.betConfirm" class="md-primary" aria-label="Bet confirmation"></md-switch>
+          </div>
+        </div>
+        <div layout="row" layout-align="center center">
+          <div flex="85">
+            <span><strong>Bet Sharing</strong></span>
+          </div>
+          <div flex="15">
+            <md-switch ng-model="vm.user.settings.betSharing" class="md-primary" aria-label="Bet sharing"></md-switch>
+          </div>
+        </div>
+
+        <div layout="row" layout-align="center center">
+          <md-button class="md-raised md-primary" ng-click="saveSettings()">
+            Save settings
+          </md-button>
+        </div>
+
+        <!--ADD NEW USER-->
+        <form name="changePassword" ng-submit="vm.onSubmit()">
+          <br />
+          <md-input-container class="md-block">
+            <!-- Use floating placeholder instead of label -->
+            <input type="password" class="form-control" id="password" placeholder="Current password" ng-model="oldPassword">
+          </md-input-container>
+          <md-input-container class="md-block">
+            <!-- Use floating placeholder instead of label -->
+            <input type="password" class="form-control" id="password" placeholder="New password" ng-model="newPassword">
+          </md-input-container>
+          <md-input-container class="md-block">
+            <!-- Use floating placeholder instead of label -->
+            <input type="password" class="form-control" id="password2" placeholder="Confirm new password" ng-model="newPassword2">
+          </md-input-container>
+
+          <div layout="row" layout-align="center center">
+            <md-button class="md-raised md-primary" ng-click="checkPassword()" ng-disabled="(oldPassword === '') || (newPassword !== newPassword2) || ( newPassword === '' || newPassword2 === '' )">
+              Change password
+            </md-button>
+          </div>
+
+        </form>
+
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Closed Bets</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+
+        <div class="ui fluid accordion" ng-repeat="game in gamesByDate">
+
+          <div ng-init="accordionInit()">
+            <div class="title">
+              <div layout="row">
+                <div flex="60">
+                  <i class="dropdown icon"></i>
+                  <strong>{{ game.gameTitle }}</strong>
+                </div>
+                <div flex="40" layout-align="center end">
+                  <strong>{{ game.winCount }} - {{ game.loseCount }}<span ng-if="game.tieCount>0"> - {{ game.tieCount }}</span> for <span ng-if="game.result>0">+</span>{{ game.result }}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="content">
+
+              <div layout="row" ng-repeat="bet in game.bets | orderBy : 'lineIndex'">
+                 <div flex="60" layout-align="center center">
+                    <md-input-container class="md-block gamebet" ng-if="bet.lineType !== 'total'">
+                      <label id="feketelabel">{{ bet.lineName }}</label>
+                      <input ng-if="bet.optionSpread !== 0" placeholder="{{ bet.optionName }} {{ bet.optionSpread > 0 ? '+'+bet.optionSpread : bet.optionSpread }}" id="fekete" disabled>
+                      <input ng-if="bet.optionSpread === 0" placeholder="{{ bet.optionName }} pk" id="fekete" disabled>
+                    </md-input-container>
+                    <md-input-container class="md-block gamebet" ng-if="bet.lineType === 'total'">
+                      <label id="feketelabel">{{ bet.lineName }}</label>
+                      <input placeholder="{{ bet.optionName }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div>
+
+                  <div flex="25" layout-align="center center">
+                    <md-input-container class="md-block gamebet">
+                      <label id="feketelabel" ng-show="$index==0">Score</label>
+                      <input placeholder="{{ bet.scoreLine }}" id="fekete" disabled>
+                      <div class="score-difference">
+                        <span ng-if="bet.status=='Winner'">Won by </span>
+                        <span ng-if="bet.status=='Loser'">Lost by </span>
+                        <span ng-if="bet.status!=='Tie'">{{ bet.scoreDifference }}</span>
+                        <span ng-if="bet.status=='Tie'">Tie</span>
+                      </div>
+                    </md-input-container>
+                  </div>
+
+                  <div flex="15" layout-align="center center">
+                    <md-input-container class="md-block gamebet">
+                      <label id="feketelabel">Result</label>
+                      <input placeholder="{{ bet.result > 0 ? '+'+bet.result : bet.result }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div>
+
+                  <!-- <div flex="20" layout-align="center center">
+                    <md-input-container class="md-block gamebet">
+                      <label id="feketelabel">Balance</label>
+                      <input placeholder="{{ bet.balance }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div> -->
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+    <md-card-footer ng-if="isMoreClosedBetsAvailable" layout="row" layout-align="center center">
+        <md-button class="md-primary md-raised" aria-label="Load More" ng-click="getBalanceData()">Load More</md-button>
+    </md-card-footer>
+  </md-card>
+
+<md-button class="md-warn" aria-label="Logout" ng-click="logout()">Logout</md-button>
+
+</md-content>

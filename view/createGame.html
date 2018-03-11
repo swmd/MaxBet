@@ -1,0 +1,210 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" href="/#/admin/dashboard">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="games">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+  <md-content layout-padding >
+    <form name="newGameForm" class="newgameform">
+      <md-input-container class="md-block">
+        <label>Enter game title</label>
+        <input md-maxlength="70" ng-required="true" name="title" ng-model="newGameFormData.gameTitle" ng-click="openLink()">
+        <div ng-messages="newGameForm.title.$error">
+          <div ng-message="required">This is required.</div>
+          <div ng-message="md-maxlength">The title has to be less than 70 characters long.</div>
+        </div>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label>Enter game link</label>
+        <input name="link" ng-model="newGameFormData.gameLink">
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label>Enter max bet value</label>
+        <input ng-required="true" name="maxBet" ng-model="newGameFormData.gameMaxBet" type="number">
+        <div ng-messages="newGameForm.maxBet.$error">
+          <div ng-message="required">This is required.</div>
+        </div>
+      </md-input-container>
+
+      <div layout="row">
+        <div flex="25" layout-align="center center">
+          <md-input-container class="md-block">
+            <input placeholder="Available at" disabled>
+          </md-input-container>
+        </div>
+
+        <div flex="37" layout-align="center center">
+          <md-input-container class="md-block">
+            <md-datepicker ng-model="newGameFormData.dateAvailable" md-placeholder="Enter date" ng-required="true"></md-datepicker>
+          </md-input-container>
+        </div>
+
+        <div flex="37" layout-align="stretch center">
+          <md-input-container class="md-block">
+            <mdp-time-picker ng-model="newGameFormData.dateAvailable" md-placeholder="Enter time" ng-required="true"></mdp-time-picker>
+          </md-input-container>
+        </div>
+      </div>
+
+      <div layout="row">
+        <div flex="25" layout-align="center center">
+          <md-input-container class="md-block">
+            <input placeholder="Close at" disabled>
+          </md-input-container>
+        </div>
+
+        <div flex="37" layout-align="center center">
+          <md-input-container class="md-block">
+            <md-datepicker ng-model="newGameFormData.dateClose" md-placeholder="Enter date" ng-required="true"></md-datepicker>
+          </md-input-container>
+        </div>
+
+        <div flex="37" layout-align="center center">
+          <md-input-container class="md-block">
+            <mdp-time-picker ng-model="newGameFormData.dateClose" md-placeholder="Enter time" ng-required="true"></mdp-time-picker>
+          </md-input-container>
+        </div>
+      </div>
+
+
+<!--{{ newGameFormData|json }}-->
+      <!--<span>{{newGameFormData|json}}</span>-->
+
+      <!--<table>
+        <tr ng-repeat="lineName in newGameFormData.lines track by $index">
+            <td> <input type="text" ng-model="newGameFormData.lines[$index].lineName"></td>
+            <td> <input type="button" ng-click="addRow($index)" value="Add" ng-show="$last"></td>
+            <td> <input type="button" ng-click="deleteRow($event,$index)" value="Delete" ng-show="$index != 0"></td>
+        </tr>
+      </table>-->
+
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="myDialog">
+          <md-dialog layout-padding>
+            <div class="ui centered medium header">Import lines from JSON</div>
+            <md-input-container class="md-block">
+              <label>Paste JSON text here</label>
+              <input name="importfromjson" ng-model="json">
+            </md-input-container>
+            <md-button class="md-primary" ng-href="http://pastebin.com/raw/vuShs0sp" target="_blank">format example</md-button>
+            <div layout="row" layout-align="center center">
+              <div><md-button class="md-raised md-primary" ng-click="parselines(json)">Import lines</md-button></div>
+            </div>
+          </md-dialog>
+        </div>
+      </div>
+      <div layout="row" layout-align="center center">
+        <md-button class="md-primary md-raised" ng-click="showPrerenderedDialog($event)">
+          Import JSON lines
+        </md-button>
+      </div>
+
+      <div ng-repeat="line in newGameFormData.lines track by $index">
+        <br/>
+        <div layout="row">
+          <div flex="95" layout-align="center start">
+            <div class="ui centered medium header">{{ line.lineName }}</div>
+            </div>
+          <div flex="5" layout-align="center center">
+            <md-icon ng-click="deleteRow($event,$index)"><i class="large red minus circle link icon"></i></md-icon>
+          </div>
+        </div>
+        <div layout="row">
+          <div flex="75" layout-align="center start">
+            <md-input-container class="md-block">
+                <label>Line {{ $index + 1 }}</label>
+                <input type="text" ng-model="line.lineName" ng-required="true" name="optionname">
+            </md-input-container>
+            </div>
+            <div flex="25" layout-align="center start">
+            <md-input-container class="md-block">
+              <md-select ng-model="line.lineType" placeholder="Type" ng-required="true" ng-change="changeType(line)">
+                <md-option value="vs">VS</md-option>
+                <md-option value="total">Total</md-option>
+                <md-option value="future">Future</md-option>
+              </md-select>
+            </md-input-container>
+            </div>
+        </div>
+
+        <div ng-repeat="option in line.options">
+          <div layout="row">
+
+            <!--DELETE OPTION-->
+            <div flex="10" layout-align="center start">
+                <md-icon style="display:inline-block;margin-top:65%;" ng-click="removeOption(option.$$hashKey, line.$$hashkey)" ng-if="$index > 1"><i class="large red minus circle link icon"></i></md-icon>
+            </div>
+
+            <div flex="35" layout-align="center start">
+              <md-input-container class="md-block">
+                <label ng-if="line.lineType!=='total'">Option {{ $index + 1 }}</label>
+                <label ng-if="line.lineType==='total'">{{ total_options[$index] }}</label>
+                <input type="text" ng-model="option.optionName" ng-required="true" name="optionname">
+              </md-input-container>
+            </div>
+
+            <div flex="15" layout-align="center start">
+              <md-input-container class="md-block">
+                <label>Odds</label>
+                <input ng-required="true" ng-model="option.optionOdds" type="number" name="odds">
+              </md-input-container>
+            </div>
+
+            <div flex="20" layout-align="center start">
+              <md-input-container class="md-block" ng-if="line.lineType !== 'future'">
+                <label ng-if="line.lineType === 'vs'">Spread</label>
+                <label ng-if="line.lineType === 'total'">Total</label>
+                <input ng-required="true" ng-model="option.optionSpread" type="number" name="spread">
+              </md-input-container>
+              <md-input-container class="md-block" ng-if="line.lineType === 'future'">
+                <label>Spread</label>
+                <input ng-required="true" ng-model="option.optionSpread" type="number" name="spread" disabled>
+              </md-input-container>
+            </div>
+
+            <div flex="15" layout-align="center start">
+              <md-input-container class="md-block">
+                <label>Juice</label>
+                <input ng-required="true" ng-model="option.optionJuice" type="number" name="juice">
+              </md-input-container>
+            </div>
+
+            <div flex="10" layout-align="center start">
+              <md-icon ng-click="toggleVariableJuice(option.$$hashKey, line.$$hashkey)" ng-if="option.variableJuice===true" style="display:inline-block;margin-top:25%;"><i class="large unlock alternate link icon"></i></md-icon>
+              <md-icon ng-click="toggleVariableJuice(option.$$hashKey, line.$$hashkey)" ng-if="option.variableJuice===false" style="display:inline-block;margin-top:25%;"><i class="large lock link icon"></i></md-icon>
+            </div>
+
+          </div>
+        </div>
+
+        <div layout="row" layout-align="center center">
+          <div><md-button class="md-raised" ng-click="addRow($index)" ng-show="$last"  layout-align="start start">Add new line</md-button></div>
+          <div><md-button class="md-primary md-hue-1" ng-click="addNewOption($index)" ng-if="line.lineType==='future'" layout-align="end start">Add new option</md-button></div>
+        </div>
+
+      </div>
+
+      <br />
+
+      <div layout="row" layout-align="center center">
+        <div><md-button class="md-raised md-primary" ng-disabled="newGameForm.$invalid || newGameFormData.dateClose - newGameFormData.dateAvailable < 60000" ng-click="submitNewGame($event)">Publish Game</md-button></div>
+      </div>
+
+    </form>
+  </md-content>

@@ -1,0 +1,169 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" href="/#/admin/dashboard">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="games">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+<md-content layout-padding>
+
+  <!--DEFAULT JUICE-->
+  <form name="juicesettings">
+    <div layout="row" layout-align="center center">
+      <div class="ui medium header">Default Juice</div>
+    </div>
+    <br />
+    <div layout="row">
+      <div flex="25" layout-align="center start">
+        <md-input-container class="md-block">
+          <label>1-2</label>
+          <input ng-required="true" ng-model="adminData.defaultjuice.onetwo" value="{{ adminData.defaultjuice.onetwo }}">
+        </md-input-container>
+      </div>
+
+      <div flex="25" layout-align="center start">
+        <md-input-container class="md-block">
+          <label>3-4</label>
+          <input ng-required="true" ng-model="adminData.defaultjuice.threefour" value="{{ adminData.defaultjuice.threefour }}">
+        </md-input-container>
+      </div>
+
+      <div flex="25" layout-align="center start">
+        <md-input-container class="md-block">
+          <label>5-9</label>
+          <input ng-required="true" ng-model="adminData.defaultjuice.fivenine" value="{{ adminData.defaultjuice.fivenine }}">
+        </md-input-container>
+      </div>
+
+      <div flex="25" layout-align="center start">
+        <md-input-container class="md-block">
+          <label>All</label>
+          <input ng-required="true" ng-model="adminData.defaultjuice.all" value="{{ adminData.defaultjuice.all }}">
+        </md-input-container>
+      </div>
+    </div>
+
+    <!--JUICE MOVEMENT-->
+    <div layout="row" layout-align="center center">
+      <div class="ui medium header">Juice Movement</div>
+    </div>
+    <div layout="row">
+      <div flex="20" layout-align="center center">
+        <md-input-container class="md-block">
+          <input placeholder="For every" id="fekete" disabled>
+        </md-input-container>
+      </div>
+
+      <div flex="15" layout-align="center start">
+        <md-input-container class="md-block">
+          <input ng-required="true" ng-model="adminData.juicemovement.forevery">
+        </md-input-container>
+      </div>
+
+      <div flex="50" layout-align="center center">
+        <md-input-container class="md-block">
+          <input placeholder="bet, move this much:" id="fekete" disabled>
+        </md-input-container>
+      </div>
+
+      <div flex="10" layout-align="center start">
+        <md-input-container class="md-block">
+          <input ng-required="true" ng-model="adminData.juicemovement.movethismuch">
+        </md-input-container>
+      </div>
+
+      <div flex="5" layout-align="center center">
+        <md-input-container class="md-block">
+          <input placeholder="%" id="fekete" disabled>
+        </md-input-container>
+      </div>
+
+    </div>
+
+    <div layout="row" layout-align="center center">
+      <div><md-button class="md-raised md-primary" ng-disabled="juicesettings.$invalid" ng-click="updateAdminData($event)">Update Settings</md-button></div>
+    </div>
+  </form>
+
+  <!--ADD NEW USER-->
+  <form name="newUserForm">
+    <br />
+    <div layout="row" layout-align="center center">
+      <div class="ui medium header">Add New User</div>
+    </div>
+    <br />
+    <md-input-container class="md-block">
+      <!-- Use floating placeholder instead of label -->
+      <input ng-model="userformData.username" type="text" placeholder="Username (required)" ng-required="true">
+    </md-input-container>
+    <md-input-container class="md-block">
+      <!-- Use floating placeholder instead of label -->
+      <input ng-model="userformData.password" type="text" placeholder="Password (required)" ng-required="true">
+    </md-input-container>
+    <md-input-container class="md-block">
+      <!-- Use floating placeholder instead of label -->
+      <input ng-model="userformData.balance" type="number" placeholder="Balance (required)" ng-required="true">
+    </md-input-container>
+    <md-input-container class="md-block">
+      <!-- Use floating placeholder instead of label -->
+      <input ng-model="userformData.displayName" type="text" placeholder="Display name" ng-required="false">
+    </md-input-container>
+    <div layout="row" layout-align="center start">
+      <div><md-button class="md-raised md-primary" ng-disabled="newUserForm.$invalid" ng-click="submitNewUser($event)">Add {{ userformData.username }} To Users</md-button></div>
+    </div>
+    <br />
+  </form>
+
+    <!--ADJUST USER BALANCES-->
+  <div layout="row" layout-align="center center">
+    <div class="ui medium header">Adjust User Balance</div>
+  </div>
+  <br />
+  <div ng-repeat="user in usersData">
+    <form name="userForm{{$index}}">
+    <div layout="row">
+      <div flex="25" layout-align="center center">
+        <md-input-container class="md-block">
+          <label id="feketelabel">Username</label>
+          <input placeholder="{{ user.email }}" id="fekete" disabled>
+        </md-input-container>
+      </div>
+
+      <div flex="20" layout-align="center start">
+        <md-input-container class="md-block">
+          <label id="feketelabel">{{ user.balance + user.balanceAdjustment }}</label>
+          <input ng-required="true" ng-model="user.balanceAdjustment" type="number">
+        </md-input-container>
+      </div>
+
+      <div flex="45" layout-align="center center">
+        <md-input-container class="md-block">
+          <label id="feketelabel">Description</label>
+          <input ng-model="description" type="text" ng-required="true">
+        </md-input-container>
+      </div>
+
+      <div flex="10" layout-align="center center">
+        <md-button class="md-icon-button md-primary" ng-disabled="userForm{{$index}}.$invalid || user.balanceAdjustment === 0" aria-label="Favorite" ng-click="updateUserData($index, user.balance, user.balanceAdjustment, description)">
+          <i class="save icon" style="font-size: 1.5em;"></i>
+        </md-button>
+      </div>
+    </div>
+  </div>
+
+</md-content>

@@ -1,0 +1,58 @@
+.bet-users > div {
+	background-color: #bbb;
+    color: white;
+    float: left;
+    margin-bottom: 2px;
+    margin-right: 2px;
+    padding: 0 2px 2px;
+}
+
+#OpenBetsContent md-input-container .md-errors-spacer {
+    min-height: 0px;
+}
+
+.clear-fix {
+	clear: both;
+}
+
+md-toast.md-success-toast-theme .md-toast-content{
+   	background-color: green;
+}
+
+md-backdrop.md-opaque {
+	background-color: rgba(0, 0, 0);
+	opacity: 0.87;
+}
+
+#betConfirmModal md-dialog {
+	background-color: transparent;
+	box-shadow: none;
+	color: white;
+}
+
+.confirm-loading {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 1.2em;
+	color: #00bf00;
+}
+
+.mb-20 {
+	margin-bottom: 20px;
+}
+
+.confirm-success {
+	text-align: center;
+	margin-top: 10px;
+	font-size: 1.2em;
+	color: #00bf00;
+}
+
+.confirm-success .check-icon {
+	font-size: 4em;
+	margin-top: 20px;
+}
+
+.md-dialog-content h2.md-title {
+	margin-bottom: 10px;
+}

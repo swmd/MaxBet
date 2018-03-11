@@ -1,0 +1,280 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" ng-click="reload()">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="games">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">User Stats</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+
+        <div ng-repeat="value in historyBets">
+            <div layout="row">
+                <div flex="60" layout-align="center center">
+                    <md-input-container class="md-block">
+                    <label id="feketelabel">Username</label>
+                    <input placeholder="{{ value.name }}" id="fekete" disabled>
+                    </md-input-container>
+                </div>
+
+                <div flex="20" layout-align="center start">
+                    <md-input-container class="md-block">
+                    <label id="feketelabel">Current</label>
+                    <input placeholder="{{ value.balance }}" id="fekete" disabled>
+                    </md-input-container>
+                </div>
+
+                <div flex="20" layout-align="center start">
+                    <md-input-container class="md-block">
+                    <label id="feketelabel">Win %</label>
+                    <input placeholder="{{ value.winrate }}%" id="fekete" disabled>
+                    </md-input-container>
+                </div>
+
+            </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Open Bets</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+        <!-- GAMES -->
+        <div class="ui fluid accordion" ng-repeat="(key, value) in openBets">
+
+            <div ng-init="accordionInit()">
+                <div class="title">
+
+                    <div layout="row">
+                        <div flex="5" layout-align="end center">
+                            <i class="dropdown icon"></i>
+                        </div>
+                        <div flex="55" layout-align="end center">
+                            <strong>{{ key }}</strong>
+                        </div>
+                        <div flex="20" layout-align="end center">
+                            <strong>Risk</strong>
+                        </div>
+                        <div flex="20" layout-align="end center">
+                            <strong>To Win</strong>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="content">
+
+                    <div layout="row">
+                        <div flex="5" layout-align="center start">
+                        </div>
+                        <div flex="95" layout-align="center start">
+                            <!-- LINES -->
+                            <div ng-init="accordionInit()" ng-repeat="line in value.lines | orderBy : 'lineIndex'">
+                                <div class="title">
+
+                                    <div layout="row">
+                                        <div flex="5" layout-align="end center">
+                                            <i class="dropdown icon"></i>
+                                        </div>
+                                        <div flex="55" layout-align="end center">
+                                            <strong>{{ line.lineName }}</strong>
+                                        </div>
+                                        <div flex="20" layout-align="end center">
+                                            <strong>{{ line.risk }}</strong>
+                                        </div>
+                                        <div flex="20" layout-align="end center">
+                                            <strong>{{ line.toWin }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="content">
+
+                                    <div layout="row">
+                                        <div flex="5" layout-align="center start">
+                                        </div>
+                                        <div flex="95" layout-align="center start">
+                                            <!-- OPTIONS -->
+                                            <div ng-init="accordionInit()" ng-repeat="(lineKey, lineValue) in line" ng-if="lineKey !== 'risk' && lineKey !== 'toWin' && lineKey !== 'lineName' && lineKey !== 'lineIndex' && lineKey !== 'lineType'">
+                                                <div class="title">
+                                                    <i class="dropdown icon"></i>
+                                                    <strong>{{ lineKey }}</strong>
+                                                </div>
+                                                <div class="content">
+                                                    <div layout="row">
+                                                        <div flex="5" layout-align="center start">
+                                                        </div>
+                                                        <div flex="95" layout-align="center start">
+                                                            <!-- BETS -->
+                                                            <div layout="row" ng-repeat="bet in lineValue">
+                                                                <div flex="65" layout-align="center center">
+                                                                    <md-input-container class="md-block gamebet">
+                                                                    <label id="feketelabel">Name</label>
+                                                                    <input placeholder="{{ bet.userId }}" id="fekete" disabled>
+                                                                    </md-input-container>
+                                                                </div>
+
+                                                                <div flex="15" layout-align="center center">
+                                                                    <md-input-container class="md-block gamebet">
+                                                                    <label id="feketelabel">Risk</label>
+                                                                    <!-- <input placeholder="{{ bet.toRisk > 100 ? Math.round(bet.betAmount / (bet.toRisk / bet.betAmount * 100)*100) : Math.abs(bet.toRisk) }}" id="fekete" disabled> -->
+                                                                    <input placeholder="{{ Math.abs(bet.toRisk) }}" id="fekete" disabled>
+                                                                    </md-input-container>
+                                                                </div>
+
+                                                                <div flex="20" layout-align="center center">
+                                                                    <md-input-container class="md-block gamebet">
+                                                                    <label id="feketelabel">To Win</label>
+                                                                    <input placeholder="{{ bet.betAmount }}" id="fekete" disabled>
+                                                                    </md-input-container>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Closed Bets</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+
+        <!-- GAMES -->
+        <div class="ui fluid accordion" ng-repeat="game in adminHistoryBetsByDate">
+
+            <div ng-init="accordionInit()">
+                <div class="title" ng-init="items.total = {}">
+                    <div layout="row">
+                        <div flex="5" layout-align="end center">
+                            <i class="dropdown icon"></i>
+                        </div>
+                        <div flex="95" layout-align="end center">
+                            <strong>{{ game.title }}: {{ items.total.amount > 0 ? '+'+items.total.amount : items.total.amount }}</strong>
+                            <!--<strong>{{ key }}</strong>-->
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+
+                    <!--<div layout="row">
+                        <div flex="5" layout-align="center start">
+                        </div>
+                        <div flex="95" layout-align="center start">
+                            <div ng-repeat="(key, value) in value">-->
+
+                                    <!--<div layout="row">
+                                        <div flex="5" layout-align="end center">
+                                        </div>
+                                        <div flex="75" layout-align="end center">
+                                            <strong>{{ key }}</strong>
+                                        </div>
+                                        <div flex="20" layout-align="end center" ng-init="items.total.amount = items.total.amount + value">
+                                            <strong>{{ value.result }}</strong>
+                                        </div>
+                                    </div>-->
+
+                                    <div layout="row">
+                                        <div flex="5" layout-align="center start">
+                                        </div>
+                                        <div flex="95" layout-align="center start">
+
+                                            <!-- LINES -->
+                                            <div ng-init="accordionInit()" ng-repeat="line in game.lines | orderBy : 'lineIndex'">
+                                                <div class="title" ng-init="items.total.amount = items.total.amount + line.result">
+                                                    <i class="dropdown icon"></i>
+                                                    <strong>{{ line.lineName }} {{ line.result > 0 ? '+'+line.result : line.result }}</strong>
+                                                </div>
+                                                <div class="content">
+                                                    <div layout="row">
+                                                        <div flex="5" layout-align="center start">
+                                                        </div>
+                                                        <div flex="95" layout-align="center start">
+                                                            <!-- BETS -->
+                                                            <div layout="row" ng-repeat="bet in line.bets">
+                                                                <div flex="80" layout-align="center center">
+                                                                    <md-input-container class="md-block gamebet">
+                                                                    <label id="feketelabel">Name</label>
+                                                                    <input placeholder="{{ bet.userId }}" id="fekete" disabled>
+                                                                    </md-input-container>
+                                                                </div>
+
+                                                                <div flex="20" layout-align="center center">
+                                                                    <md-input-container class="md-block gamebet">
+                                                                    <label id="feketelabel">Result</label>
+                                                                    <input placeholder="{{ bet.result > 0 ? '+'+bet.result : bet.result }}" id="fekete" disabled>
+                                                                    </md-input-container>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            <!--</div>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+    <md-card-footer ng-if="isMoreHistoryAvailable" layout="row" layout-align="center center">
+        <md-button class="md-primary md-raised" aria-label="Load More" ng-click="loadMoreHistory()">Load More</md-button>
+    </md-card-footer>
+  </md-card>
+
+<md-button class="md-warn" aria-label="Logout" ng-click="logout()">Logout</md-button>
+
+</md-content>

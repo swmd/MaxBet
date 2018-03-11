@@ -1,0 +1,77 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" href="/#/admin/dashboard">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="editgame">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Finalize Game</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+        <form name="gameform">
+            <div ng-repeat="line in gameData.lines">
+
+                <p class="ui small header">{{ line.lineName }}: {{ line.winnerOption }}</p>
+                <p ng-if="line.lineType === 'vs'">Total: {{ Math.round(line.total * 100) / 100 }}</p>
+                <div layout="row" ng-repeat="option in line.options">
+                    <div flex="80" layout-align="center center">
+                        <md-input-container class="md-block gamebet" ng-if="line.lineType !== 'total'">
+                            <label id="feketelabel" ></label>
+                            <input placeholder="{{ option.optionName }}: {{ option.optionSpread > 0 ? '+'+option.optionSpread : option.optionSpread }}" id="fekete" disabled>
+                        </md-input-container>
+                        <md-input-container class="md-block gamebet" ng-if="line.lineType === 'total'">
+                            <label id="feketelabel" ></label>
+                            <input placeholder="{{ option.optionName }}" id="fekete" disabled>
+                        </md-input-container>
+                    </div>
+
+                    <div flex="20" layout-align="center center">
+                        <md-input-container class="md-block gamebet" ng-if="line.lineType !== 'future'">
+                            <!--<label id="feketelabel">R: {{ option.points + option.optionSpread }}</label>-->
+                            <label id="feketelabel">Result</label>
+                            <input type="number" ng-required="true" ng-model="option.points" ng-change="createResult(option.points, option, $parent.line)">
+                        </md-input-container>
+
+                        <md-checkbox
+                          ng-if="line.lineType === 'future'"
+                          ng-model="option.points"
+                          ng-change="createResult(option.points, option, $parent.line)"
+                          aria-label="Winner"
+                          class="md-primary"
+                          ng-true-value="1"
+                          ng-false-value="0">
+                        </md-checkbox>
+
+                    </div>
+                </div>
+            </div>
+
+            <div layout="row" layout-align="center center">
+                <md-button class="md-raised md-primary" ng-disabled="gameform.$invalid" ng-click="finalizeScores($event)">Finalize Scores</md-button>
+            </div>
+        </form>
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>

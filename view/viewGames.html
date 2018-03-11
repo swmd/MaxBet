@@ -1,0 +1,54 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" href="/#/admin/dashboard">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="editgame">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Edit Games</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+
+        <div layout="row" ng-repeat="game in gameData" layout-align="center center">
+          <div flex="45">
+            <span><strong>{{ game.title }}</strong></span>
+          </div>
+
+          <div flex="20">
+            <md-button class="md-primary" ng-href="/#/edit/game/{{game.id}}">Edit</md-button>
+          </div>
+
+          <div flex="30">
+            <md-button class="md-warn" ng-href="/#/finalize/game/{{game.id}}">Finalize</md-button>
+          </div>
+
+          <div flex="5">
+            <i class="icon close" ng-click="removeGame(game, $index)"></i>
+          </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>

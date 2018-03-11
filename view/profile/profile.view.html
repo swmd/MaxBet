@@ -1,0 +1,306 @@
+<md-toolbar class="md-hue-2">
+  <div class="md-toolbar-tools">
+  <md-button aria-label="Fantasy Props" href="/#/profile">
+    <h2>Fantasy Props</h2>
+  </md-button>
+
+    <span flex></span>
+
+  <md-button aria-label="Fantasy Props" href="/#/userbalance" ng-if="vm.user.name !== 'admin'">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+  <md-button aria-label="Fantasy Props" href="/#/admin/dashboard" ng-if="vm.user.name === 'admin'">
+    <span>{{ vm.user.name }}: {{ vm.user.balance }}<span>
+  </md-button>
+    <!--<h3>
+      <span ng-href="/#/userbalance">{{ vm.user.name }}: {{ vm.user.balance }}</span>
+    </h3>-->
+  </div>
+</md-toolbar>
+
+<md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links" ng-if="vm.user.email === 'admin'">
+  <div layout="row" layout-align="space-around center">
+    <md-nav-item md-nav-href="/#/create/game" name="newgame">New Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/view/games" name="games">Edit Game</md-nav-item>
+    <md-nav-item md-nav-href="/#/admin/settings" name="admin">Settings</md-nav-item>
+  </div>
+</md-nav-bar>
+
+<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-title>
+      <md-card-title-text>
+        <span class="md-headline">Open Bets</span>
+      </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <md-card-content-text>
+
+        <div class="ui fluid accordion" ng-init="accordionInit()">
+          <div ng-repeat="(gameId, gameBets) in openBets">
+            <div class="title">
+              <i class="dropdown icon"></i>
+              <strong>{{ gameBets[0].gameTitle }}</strong>
+            </div>
+            <div class="content">
+
+              <div layout="row" ng-repeat="bet in gameBets | orderBy : 'lineIndex'">
+                <div flex="65" layout-align="center center">
+                    <md-input-container class="md-block gamebet" ng-if="bet.lineType !== 'total'">
+                      <label id="feketelabel">{{ bet.lineName }}</label>
+                      <input ng-if="option.optionSpread !== 0" placeholder="{{ bet.optionName }} {{ bet.optionSpread > 0 ? '+'+bet.optionSpread : bet.optionSpread }}" id="fekete" disabled>
+                      <input ng-if="option.optionSpread === 0" placeholder="{{ bet.optionName }} pk" id="fekete" disabled>
+                    </md-input-container>
+                    <md-input-container class="md-block gamebet" ng-if="bet.lineType === 'total'">
+                      <label id="feketelabel">{{ bet.lineName }}</label>
+                      <input placeholder="{{ bet.optionName }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div>
+
+                  <div flex="15" layout-align="center center">
+                    <md-input-container class="md-block gamebet">
+                      <label id="feketelabel">Risk</label>
+                      <input placeholder="{{ bet.toRisk > 100 ? Math.round(bet.betAmount / (bet.toRisk / bet.betAmount * 100)*100) : Math.abs(bet.toRisk) }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div>
+
+                  <div flex="20" layout-align="center center">
+                    <md-input-container class="md-block gamebet">
+                      <label id="feketelabel">To Win</label>
+                      <input placeholder="{{ bet.betAmount }}" id="fekete" disabled>
+                    </md-input-container>
+                  </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>
+
+<md-content flex id="OpenBetsContent" layout='column'>
+  <md-card ng-repeat="game in gameData">
+    <!--<div ng-init="hideGame(game)" ng-if="game.finalized !== true">-->
+    <div ng-init="hideGame(game)">
+      <!--<div ng-if="game.show">-->
+        <md-card-title>
+          <md-card-title-text>
+            <div layout="row">
+              <div flex="65" layout-align="start center">
+                <span class="md-headline">
+                  <a ng-if="game.gameLink" target="_blank" href="{{game.gameLink}}"> {{ game.title }} </a>
+                  <span ng-if="!game.gameLink">
+                    {{ game.title }}
+                  </span>
+                </span>
+                <br />
+                <timer></timer>
+                <span><strong>Max Bet: {{ game.maxBet }}</strong></span><br />
+                <!--<span>{{ (userBets | filter:{gameId:game.id}).length - ((userBets | filter:{gameId:game.id}) | filter:{betAmount:0}:true).length }} valid bets</span>-->
+              </div>
+              <div flex="35" layout-align="end center" ng-if="juiceChartSame === false">
+                <div style="float:right;">
+                <span ng-class="(game.validPreviousBetCount <  3) ? 'currentbracket' : ''">1-2 for {{ juiceChart.onetwo }}</span><br />
+                <span ng-class="(game.validPreviousBetCount <  5 && game.validPreviousBetCount > 2) ? 'currentbracket' : ''">3-4 for {{ juiceChart.threefour }}</span><br />
+                <span ng-class="(game.validPreviousBetCount <  10 && game.validPreviousBetCount > 4) ? 'currentbracket' : ''">5-9 for {{ juiceChart.fivenine }}</span><br />
+                <span ng-class="(game.validPreviousBetCount >  9) ? 'currentbracket' : ''">All for {{ juiceChart.all }}</span><br />
+                </div>
+              </div>
+            </div>
+            <div layout="row" layout-align="center center">
+                <br />
+                <span><strong>{{ game.statusText }}</strong></span><br />
+            </div>
+            <!--<div layout="row" layout-align="center center" ng-if="game.status !== 'closed'">-->
+            <div layout="row" layout-align="center center" ng-hide="game.status === 'closed'">
+              <i>
+              <span ng-if="game.timeTillEvent.daysLeft > 0">{{ game.timeTillEvent.daysLeft }} days, </span>
+              <span ng-hide="game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.daysLeft === 0" ng-class="game.timeTillEvent.daysLeft === 0 && game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.minutesLeft < 11 ? 'redtext' : ''">{{ game.timeTillEvent.hoursLeft }} hours, </span>
+              <span ng-hide="game.timeTillEvent.minutesLeft === 0 && game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.daysLeft === 0" ng-class="game.timeTillEvent.daysLeft === 0 && game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.minutesLeft < 11 ? 'redtext' : ''">{{ game.timeTillEvent.minutesLeft }} minutes</span>
+              <span ng-if="game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.minutesLeft < 11" ng-class="game.timeTillEvent.daysLeft === 0 && game.timeTillEvent.hoursLeft === 0 && game.timeTillEvent.minutesLeft < 11 ? 'redtext' : ''"> {{ game.timeTillEvent.secondsLeft }} seconds</span>
+              </i>
+            </div>
+            <!--validPreviousBetCount: {{ game.validPreviousBetCount }} <br />-->
+            <!--baseJuice: {{ game.baseJuice }} <br />-->
+            <!--dateAvailable: {{ game.dateAvailable }} <br />-->
+            <!--<span countdown end-date="May 9,2017" units="weeks"></strong>-->
+          </md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+          <md-card-content-text>
+            <!--<div ng-if="game.status === 'open' || game.status === 'closed'">-->
+              <div layout="row" ng-repeat="line in game.lines | orderBy : 'line.lineIndex'">
+              <!--<div layout="row" ng-repeat="line in game.lines">-->
+                <div flex>
+                  <p class="ui small header">{{ line.lineName }}:</p>
+                  <div ng-repeat="option in line.options">
+                    <form name="option{{$index}}form">
+
+                      <!--<div layout="row">
+                        <span>
+                          Base odds: {{ option.optionOdds }} Base Juice: {{ game.baseJuice }}<br>
+                          Translates to %: {{ -game.baseJuice / ( 100 - game.baseJuice ) }}<br>
+                          Above 50 %: {{ (-game.baseJuice / ( 100 - game.baseJuice )) - 0.5 }}<br>
+                          Brady + 7:  {{ (option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5) }}<br>
+                          Final:  {{ (option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5) > 0.5 ? Math.round(( 100 * ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) ) / ( ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) - 1 )) : '+'+Math.round((100 * (1 - ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5))) / ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) )) }}<br>
+                          Final:  {{ ( 100 * ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) ) / ( ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) - 1 ) }}<br>
+                        </span>
+                      </div>
+      <br/>-->
+                      <div layout="row">
+                        <div flex="55" layout-align="center center">
+                          <md-input-container class="md-block gamebet" ng-if="line.lineType !== 'total'">
+                          <!--<md-input-container class="md-block gamebet" ng-if="option.optionSpread !== 0">-->
+                            <!--<label id="feketelabel">Spread: {{ option.optionSpread }}</label>-->
+                            <input ng-if="option.optionSpread !== 0" placeholder="{{ option.optionName }} {{ option.optionSpread > 0 ? '+'+option.optionSpread : option.optionSpread }}" id="fekete" disabled>
+                            <input ng-if="option.optionSpread === 0" placeholder="{{ option.optionName }} pk" id="fekete" disabled>
+                          </md-input-container>
+                          <md-input-container class="md-block gamebet" ng-if="line.lineType === 'total'">
+                            <label id="feketelabel"></label>
+                            <input placeholder="{{ option.optionName }}" id="fekete" disabled>
+                          </md-input-container>
+                        </div>
+
+                        <div flex="15" layout-align="center center">
+                          <md-input-container class="md-block gamebet">
+                            <label id="feketelabel">Odds</label>
+                            <input ng-if="game.juiceDone === true" placeholder="{{ (option.optionOdds/100) + ((-game.baseJuice  / ( 100 - game.baseJuice )) - 0.5) > 0.5 ? Math.round(( 100 * ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) ) / ( ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) - 1 )) : '+'+Math.round((100 * (1 - ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5))) / ((option.optionOdds/100) + ((-game.baseJuice / ( 100 - game.baseJuice )) - 0.5)) )) }}" ng-model="optionJuice" id="fekete" disabled>
+                          </md-input-container>
+                        </div>
+
+                        <div flex="20" layout-align="start start">
+                          <md-input-container>
+                            <label id="feketelabel">M: {{ game.maxBet - option.previusBetsTotal  }}</label>
+                            <input type="number" placeholder="Bet" ng-model="option.placeAmount" ng-change="inputBetChanged(game.id, line.lineName, option.optionName, option.optionJuice, option.placeAmount, option, game, $index, line.options)" min="1" max="{{ game.maxBet - option.previusBetsTotal }}" ng-if="option.previusBetsTotal !== game.maxBet && game.status !== 'closed' && game.status !== 'later'" />
+                            <input placeholder="Maxed" id="fekete" disabled ng-if="option.previusBetsTotal === game.maxBet && game.status !== 'closed'" />
+                            <input placeholder="Closed" id="fekete" disabled ng-if="game.status === 'closed'" />
+                            <input placeholder="Preview" id="fekete" disabled ng-if="game.status === 'later'" />
+                          </md-input-container>
+                        </div>
+
+                        <div flex="10" layout-align="start center">
+                          <!--<md-button class="md-icon-button md-primary" aria-label="Send Bet" ng-click="sendBet(game, line, option)" ng-disabled="option.previusBetsTotal === game.maxBet || option{{$index}}form.$invalid || game.juiceDone !== true || game.status === 'later' || game.status === 'closed'">-->
+                          <md-button class="md-icon-button md-primary" aria-label="Send Bet" ng-click="modal(game, line, option, option.placeAmount)" ng-disabled="option.previusBetsTotal === game.maxBet || option{{$index}}form.$invalid || game.juiceDone !== true || game.status === 'later' || game.status === 'closed'">
+                          <!--<md-button class="md-icon-button md-primary" aria-label="Send Bet" ng-if="">-->
+                            <!--<md-button class="md-icon-button md-primary" ng-disabled="option{{$index}}form.$invalid || betAmount == null" aria-label="Send Bet" ng-click="sendBet($index, game.id, line.lineName, option.optionName, option.optionOdds, betAmount)">-->
+                            <i class="lightning icon" style="font-size: 1.5em;"></i>
+                          </md-button>
+                        </div>
+                      </div>
+                      <div class="row bet-users" flex="90" 
+                            ng-if="vm.user.settings.betSharing">
+                        <div ng-repeat="bet in allOpenBets[game.id][line.lineName][option.optionName]">{{bet.user.name}}</div>
+                      </div>
+                      <div class="clear-fix"></div>
+                    </form>
+                  </div>
+                  <br />
+                </div>
+
+              </div>
+          </md-card-content-text>
+        </md-card-content>
+      <!--</div>-->
+    </div>
+  </md-card>
+</md-content>
+
+<!--<md-card class="betconfirmmodal">
+  <md-card-title>
+    <md-card-title-text>
+      <span class="md-headline">Card with image</span>
+      <span class="md-subhead">Small</span>
+    </md-card-title-text>
+    <md-card-title-media>
+      <div class="md-media-sm card-media"></div>
+    </md-card-title-media>
+  </md-card-title>
+  <md-card-actions layout="row" layout-align="end center">
+    <md-button>Action 1</md-button>
+    <md-button>Action 2</md-button>
+  </md-card-actions>
+</md-card>-->
+
+<script type="text/ng-template" id="confirm.modal.tmpl.html">
+  <div id="betConfirmModal">
+    <md-dialog layout-padding="">
+      <!--<div class="header">
+          Bet on: {{ moption.optionName }} at {{ (moption.optionOdds/100) + ((-mgame.baseJuice  / ( 100 - mgame.baseJuice )) - 0.5) > 0.5 ? Math.round(( 100 * ((moption.optionOdds/100) + ((-mgame.baseJuice / ( 100 - mgame.baseJuice )) - 0.5)) ) / ( ((moption.optionOdds/100) + ((-mgame.baseJuice / ( 100 - mgame.baseJuice )) - 0.5)) - 1 )) : '+'+Math.round((100 * (1 - ((moption.optionOdds/100) + ((-mgame.baseJuice / ( 100 - mgame.baseJuice )) - 0.5))) / ((moption.optionOdds/100) + ((-mgame.baseJuice / ( 100 - mgame.baseJuice )) - 0.5)) )) }}?
+      </div>-->
+      <div class="description">
+        <h3>
+          Bet on: {{ moption.optionName }} {{ moptionSpread }} at {{ mjuice }}?<br>
+          Risk: {{ mrisk }}<br>
+          To Win: {{ mbetAmount }}
+        </h3>
+      </div>
+      <div class="actions">
+        <div class="two small ui inverted buttons">
+          <div class="ui cancel red basic inverted button" ng-click="closeModal()">
+            <i class="remove icon"></i>
+            No
+          </div>
+          <div class="ui ok blue basic inverted button" ng-click="sendBet(mgame, mline, moption, mbetAmount)" ng-disabled="bet_status">
+            <i class="checkmark icon"></i>
+            Yes
+          </div>
+        </div>
+      </div>
+      <div class="confirm-loading" ng-show="bet_status=='loading'">
+        <div class="mb-20">Placing Bet...</div>
+        <div layout="row" layout-sm="column" layout-align="space-around">
+          <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+      </div>
+      <div class="confirm-success" ng-show="bet_status=='success'">
+        <div class="mb-20">Bet placed!</div>
+        <div class="check-icon"><i class="checkmark icon"></i></div>
+      </div>
+    </md-dialog>
+  </div>
+</script>
+
+<!--<md-content flex id="content" layout='column'>
+  <md-card>
+    <md-card-content>
+      <md-card-content-text>
+        <div class="ui fluid accordion">
+          <div ng-init="accordionInit()">
+            <div class="title">
+              <i class="dropdown icon"></i>
+              <strong>Games Debug</strong>
+            </div>
+            <div class="content">
+              <span>{{ gameData|json }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="ui fluid accordion">
+          <div ng-init="accordionInit()">
+            <div class="title">
+              <i class="dropdown icon"></i>
+              <strong>Bets Debug</strong>
+            </div>
+            <div class="content">
+              <span>{{ userBets|json }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="ui fluid accordion">
+          <div ng-init="accordionInit()">
+            <div class="title">
+              <i class="dropdown icon"></i>
+              <strong>Open Bets Debug</strong>
+            </div>
+            <div class="content">
+              <span>{{ openBetsGames|json }}</span>
+            </div>
+          </div>
+        </div>
+      </md-card-content-text>
+    </md-card-content>
+  </md-card>
+</md-content>-->
